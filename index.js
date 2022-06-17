@@ -14,7 +14,6 @@ let participants  = [];
 
 
 client.on("messageCreate", (message) => {
-    console.log(message.author.id);
     if(message.content.startsWith("!start") && lobbyOpen === false) {
         message.channel.sendTyping();
         lobbyOpen = true;
@@ -27,7 +26,12 @@ client.on("messageCreate", (message) => {
             message.channel.sendTyping();
             lobbyOpen = false;
             message.channel.send('Lobby closed, type !start to open a new Lobby');
-            message.channel.send("Current participants: " + participants.join(''));
+            let mafia;
+            function getMafia() {
+                let mafiaID = Math.floor(Math.random() * participants.length);
+                mafia = participants[mafiaID].id;
+            }
+            message.channel.send("The mafia is: " + mafia);
             }
         }, 10000);
     }
@@ -36,9 +40,10 @@ client.on("messageCreate", (message) => {
 client.on("messageReactionAdd", (messageReaction, user ) => {
     if (messageReaction.emoji.name == '👏'&& user != '987373655715639316') {
         participants.push(user);
-        console.log('someone reacted');
+        console.log(participants[0].id);
     }
 })
+
 
 
 
