@@ -9,7 +9,11 @@ client.once('ready', () => {
 	console.log('Ready!');
 });
 
-
+client.on("messageCreate", (message) => {
+    if(message.content.startsWith("!start")) {
+        message.channel.send("Hello!");
+    }
+})
 
 
 
