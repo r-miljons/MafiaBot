@@ -4,7 +4,7 @@ const { token } = require('./config.json');
 // Create a new client instance
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES"] });
 
-// temp holds new channel ID
+// temp variable holds new channel ID
  var channelID
  
 // When the client is ready, run this code (only once)
@@ -16,19 +16,21 @@ client.on("messageCreate", async (message) => {
     if(message.content.startsWith("!start")) {
         message.channel.send("Hello!");
     }
+    // temp command for creating new channel
     if(message.content.startsWith("!channel")) {
         channelID = await createNewChannel(message)
     }
+    // temp command for deleteing channel
     if(message.content.startsWith("!delete")){
         deleteChannel(channelID)
     }
 })
 
-// create new channel and return id
+// create new channel and return its id
 const createNewChannel = async (message)=>{
     let result = await message.guild.channels.create('Dark Corner',{
         type: "GUILD_TEXT",
-         permissionOverwrites: [{ // same as before
+         permissionOverwrites: [{
             id: message.guild.id,
             allow: ["VIEW_CHANNEL", "SEND_MESSAGES"],
         }]
