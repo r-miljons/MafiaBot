@@ -1,8 +1,22 @@
-const { Client, Intents } = require('discord.js');
+const { Client, Intents , MessageEmbed} = require('discord.js');
 const { token } = require('./config.json');
 
 // Create a new client instance
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "GUILD_MESSAGE_REACTIONS"] });
+
+const mafiaImg = 'https://media.istockphoto.com/photos/noir-movie-character-picture-id837345268?k=20&m=837345268&s=612x612&w=0&h=1tahuBSTIUCUbVcZhaxHMV5iLm-W1c_UBlz7VBAcNrc=';
+const exampleEmbed = new MessageEmbed()
+	.setColor('#FFFF00')
+	.setTitle('Mafia')
+	.setDescription('Join the mafia game or something')
+	.setThumbnail(mafiaImg)
+	//.addFields(
+	//	{ name: 'Regular field title', value: 'Some value here' },
+	//	{ name: '\u200B', value: '\u200B' },
+	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
+	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
+	//)
+	.setTimestamp();
 
 // temp variable holds new channel ID
  var channelID
@@ -16,11 +30,12 @@ client.once('ready', () => {
 client.on("messageCreate", (message) => {
     console.log(message.author.id);
     if(message.content.startsWith("!start") && lobbyOpen === false) {
-        message.channel.sendTyping();
+
         lobbyOpen = true;
-        message.channel.send("the embed thing goes here");  
+        message.channel.send({ embeds: [exampleEmbed]});  
+       
     }
-    if (message.author.id === '987373655715639316' && message.content === 'the embed thing goes here') {
+    if (message.author.id === '987373655715639316' && message.content === '{ embeds: [exampleEmbed]} ) {
         message.react('👏');
         setTimeout(() => {
             if(lobbyOpen === true) {
@@ -67,6 +82,7 @@ const deleteChannel =  (id)=>{
       }).first()
       channel.delete()
 }
+
 
 // Login to Discord with your client's token
 client.login(token);
