@@ -33,6 +33,7 @@ client.on("messageCreate", (message) => {
     }
 }) 
 
+
 client.on("messageReactionAdd", (messageReaction, user ) => {
     if (messageReaction.emoji.name == '👏'&& user != '987373655715639316') {
         participants.push(user);
@@ -41,6 +42,12 @@ client.on("messageReactionAdd", (messageReaction, user ) => {
 })
 
 
+
+
+
+//1st commit from Siva
+//raimonds
+// main
 
 
 // Login to Discord with your client's token
