@@ -7,16 +7,14 @@ const mafiaImg = 'https://media.istockphoto.com/photos/noir-movie-character-pict
 const exampleEmbed = new MessageEmbed()
 	.setColor('#FFFF00')
 	.setTitle('Mafia')
-	.setURL('https://discord.js.org/')
 	.setDescription('Join the mafia game or something')
 	.setThumbnail(mafiaImg)
-	.addFields(
-		{ name: 'Regular field title', value: 'Some value here' },
-		{ name: '\u200B', value: '\u200B' },
-		{ name: 'Inline field title', value: 'Some value here', inline: true },
-		{ name: 'Inline field title', value: 'Some value here', inline: true },
-	)
-	.addField('Inline field title', 'Some value here', true)
+	//.addFields(
+	//	{ name: 'Regular field title', value: 'Some value here' },
+	//	{ name: '\u200B', value: '\u200B' },
+	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
+	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
+	//)
 	.setTimestamp();
 
 // When the client is ready, run this code (only once)
