@@ -36,7 +36,7 @@ client.on("messageCreate", async (message) => {
     }
 }) 
 
-
+// 
 // create new channel and return id
 const createNewChannel = async (message)=>{
     let result = await message.guild.channels.create('Dark Corner',{
