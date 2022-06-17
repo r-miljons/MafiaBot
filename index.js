@@ -13,13 +13,6 @@ client.once('ready', () => {
 });
 
 
-client.on("messageCreate", async (message) => {
-    if(message.content.startsWith("!start")) {
-        message.channel.send("Hello!");
-let lobbyOpen = false;
-let participants  = [];
-
-
 client.on("messageCreate", (message) => {
     console.log(message.author.id);
     if(message.content.startsWith("!start") && lobbyOpen === false) {
@@ -74,17 +67,6 @@ const deleteChannel =  (id)=>{
       }).first()
       channel.delete()
 }
-
-//1st commit from Siva
-//raimonds
-// main
-
-
-
-//1st commit from Siva
-//raimonds
-// main
-
 
 // Login to Discord with your client's token
 client.login(token);
