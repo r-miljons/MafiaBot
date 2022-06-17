@@ -14,7 +14,7 @@ client.once('ready', () => {
 
 let lobbyOpen = false;
 
-client.on("messageCreate", async (message) => {
+client.on("messageCreate",  (message) => {
     console.log(message.author.id);
     if(message.content.startsWith("!start") && lobbyOpen === false) {
         lobbyOpen = true;
@@ -27,12 +27,6 @@ client.on("messageCreate", async (message) => {
             message.channel.send('Lobby closed, type !start to open a new Lobby');
             }
         }, 30000);
-    }
-        if(message.content.startsWith("!channel")) {
-        channelID = await createNewChannel(message)
-    }
-    if(message.content.startsWith("!delete")){
-        deleteChannel(channelID)
     }
 }) 
 
