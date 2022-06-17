@@ -15,7 +15,7 @@ client.on("messageCreate", (message) => {
     }
 })
 //1st commit from Siva
-
+//raimonds
 
 // Login to Discord with your client's token
 client.login(token);
