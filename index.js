@@ -10,10 +10,13 @@ client.once('ready', () => {
 });
 
 let lobbyOpen = false;
+let participants  = [];
+
 
 client.on("messageCreate", (message) => {
     console.log(message.author.id);
     if(message.content.startsWith("!start") && lobbyOpen === false) {
+        message.channel.sendTyping();
         lobbyOpen = true;
         message.channel.send("the embed thing goes here");  
     }
@@ -21,13 +24,21 @@ client.on("messageCreate", (message) => {
         message.react('👏');
         setTimeout(() => {
             if(lobbyOpen === true) {
+            message.channel.sendTyping();
+            lobbyOpen = false;
             message.channel.send('Lobby closed, type !start to open a new Lobby');
+            message.channel.send("Current participants: " + participants.join(''));
             }
-        }, 30000);
+        }, 10000);
     }
 }) 
 
-
+client.on("messageReactionAdd", (messageReaction, user ) => {
+    if (messageReaction.emoji.name == '👏'&& user != '987373655715639316') {
+        participants.push(user);
+        console.log('someone reacted');
+    }
+})
 
 
 
