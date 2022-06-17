@@ -10,66 +10,58 @@ const exampleEmbed = new MessageEmbed()
 	.setTitle('Mafia')
 	.setDescription('Join the mafia game or something')
 	.setThumbnail(mafiaImg)
-	//.addFields(
-	//	{ name: 'Regular field title', value: 'Some value here' },
-	//	{ name: '\u200B', value: '\u200B' },
-	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
-	//	{ name: 'Inline field title', value: 'Some value here', inline: true },
-	//)
+	
 	.setTimestamp();
 
-// temp variable holds new channel ID
- var channelID
- 
+
 // When the client is ready, run this code (only once)
 client.once('ready', () => {
 	console.log('Ready!');
 });
 
+const game = {};
+
+game.lobbyOpen = false;
+game.participants = [];
+
 
 client.on("messageCreate", (message) => {
-    if(message.content.startsWith("!start") && lobbyOpen === false) {
+    if(message.content.startsWith("!start") && game.lobbyOpen === false) {
 
-        lobbyOpen = true;
+        game.lobbyOpen = true;
         message.channel.send({ embeds: [exampleEmbed]});  
        
     }
-    if (message.author.id === '987373655715639316' && message.content === '{ embeds: [exampleEmbed]} ) {
+    if (message.author.id === '987373655715639316' && message.content === { embeds: [exampleEmbed]} ) {
         message.react('👏');
         setTimeout(() => {
-            if(lobbyOpen === true) {
+            if(game.lobbyOpen === true) {
             message.channel.sendTyping();
-            lobbyOpen = false;
+            game.lobbyOpen = false;
             message.channel.send('Lobby closed, type !start to open a new Lobby');
             let mafia;
             function getMafia() {
-                let mafiaID = Math.floor(Math.random() * participants.length);
-                mafia = participants[mafiaID].id;
+                let mafiaID = Math.floor(Math.random() * game.participants.length);
+                mafia = game.participants[mafiaID].id;
             }
             message.channel.send("The mafia is: " + mafia);
             }
         }, 10000);
     }
-}) 
+
+});
+ 
 
 
 client.on("messageReactionAdd", (messageReaction, user ) => {
     if (messageReaction.emoji.name == '👏'&& user != '987373655715639316') {
-        participants.push(user);
-        console.log(participants[0].id);
+        game.participants.push(user);
+        console.log(game.participants[0].id);
     }
 
 })
 
-    // temp command for creating new channel
-    if(message.content.startsWith("!channel")) {
-        channelID = await createNewChannel(message)
-    }
-    // temp command for deleteing channel
-    if(message.content.startsWith("!delete")){
-        deleteChannel(channelID)
-    }
-}) 
+    
 
 // create new channel and return its id
 const createNewChannel = async (message)=>{
