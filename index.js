@@ -37,15 +37,13 @@ client.on("messageCreate", (message) => {
     }
 }) 
 
+
 client.on("messageReactionAdd", (messageReaction, user ) => {
     if (messageReaction.emoji.name == '👏'&& user != '987373655715639316') {
         participants.push(user);
         console.log(participants[0].id);
     }
 })
-
-
-
 
 
 // Login to Discord with your client's token
