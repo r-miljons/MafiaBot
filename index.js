@@ -1,4 +1,4 @@
-const { Client, Intents, MessageEmbed } = require("discord.js");
+const { Client, Intents, MessageEmbed, MessageActionRow } = require("discord.js");
 const { token } = require("./config.json");
 
 // Create a new client instance
@@ -40,23 +40,27 @@ game.roomID = ""; //game room
 // nominations
 game.nominationActive = false;
 let nominations = {};
+var embedID
+// botID = '987427488009433108' // 
+//botID = "987373655715639316"; //Mafia Bot
+botID = "987431184554393700"
 
-// botID = '987427488009433108' // Zane Bot
-botID = "987373655715639316"; //Mafia Bot
-
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
   /* ----------------------------- start the game ----------------------------- */
   if (message.content.startsWith("!start") && game.lobbyOpen === false) {
     game.lobbyOpen = true;
-    message.channel.send(
-      /*{ embeds: [exampleEmbed]}*/ "Game Lobby open, react to this message to participate!"
-    );
-  }
 
+   const messageEmbed = await message.channel.send({ embeds: [exampleEmbed]})
+    embedID = messageEmbed.id
+    console.log(messageEmbed)
+
+  }
+  console.log("Embed", embedID)
+  console.log("Message", message.id)
   /* ------------------------------- open lobby ------------------------------- */
   if (
-    message.author.id === botID &&
-    message.content == "Game Lobby open, react to this message to participate!"
+    message.author.id === botID && 
+    message.id == embedID
   ) {
     message.react("👏");
 
