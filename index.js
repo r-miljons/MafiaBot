@@ -115,6 +115,12 @@ const activateLobby = (message) => {
         game.participants[Math.floor(Math.random() * game.participants.length)];
       game.participantRoles.mafia = mafia;
       message.channel.send("The mafia is: " + mafia);
+      mafia.send("You are mafia! 👺");
+      game.participantRoles.civilians.forEach((civilian) => {
+        civilian.send("You are civilian 👤");
+      });
+      game.participantRoles.doctor.send("You are doctor 👨🏼‍⚕️");
+      game.participantRoles.detective.send("You are detective 🕵🏼");
       message.channel.send("New room created, go to your room!");
       createNewChannel(message);
     }
