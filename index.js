@@ -45,18 +45,25 @@ var embedID
 //botID = "987373655715639316"; //Mafia Bot
 botID = "987431184554393700"
 
+const TEAM_SIZE = 1
+
+const embedMessages = {}
+const gameUsers = {}
+
 client.on("messageCreate", async (message) => {
   /* ----------------------------- start the game ----------------------------- */
   if (message.content.startsWith("!start") && game.lobbyOpen === false) {
     game.lobbyOpen = true;
 
-   const messageEmbed = await message.channel.send({ embeds: [exampleEmbed]})
+    const messageEmbed = await message.channel.send({ embeds: [exampleEmbed]})
     embedID = messageEmbed.id
     console.log(messageEmbed)
 
+    embedMessages[embedID] = messageEmbed
   }
   console.log("Embed", embedID)
   console.log("Message", message.id)
+
   /* ------------------------------- open lobby ------------------------------- */
   if (
     message.author.id === botID && 
@@ -64,35 +71,64 @@ client.on("messageCreate", async (message) => {
   ) {
     message.react("👏");
 
-    const waitForFullLobby = setInterval(() => {
-      if (game.participants.length === 5) {
-        message.channel.sendTyping();
-        // game.participants = [];
-        clearInterval(waitForFullLobby);
-        lobbyOpen = false;
-        assignRoles();
-        sendRoles(message);
-        message.channel.send(
-          "Lobby Closed! Game number (id) started successfully!\n A new game channel (id) has been created with all the participants"
-        );
-      }
-    }, 1);
-    setTimeout(() => {
-      if (game.lobbyOpen === true && game.participants.length < 5) {
-        message.channel.sendTyping();
-        game.lobbyOpen = false;
-        clearInterval(waitForFullLobby);
-        message.channel.send(
-          "Game not started, need 5 people to start the game.\n Type !start to open a new Lobby"
-        );
-      }
-    }, 20000);
+    // const waitForFullLobby = setInterval(() => {
+    //   if (game.participants.length === 5) {
+    //     message.channel.sendTyping();
+    //     // game.participants = [];
+    //     clearInterval(waitForFullLobby);
+    //     lobbyOpen = false;
+    //     assignRoles();
+    //     sendRoles(message);
+    //     message.channel.send(
+    //       "Lobby Closed! Game number (id) started successfully!\n A new game channel (id) has been created with all the participants"
+    //     );
+    //   }
+    // }, 1);
+    // setTimeout(() => {
+    //   if (game.lobbyOpen === true && game.participants.length < 5) {
+    //     message.channel.sendTyping();
+    //     game.lobbyOpen = false;
+    //     clearInterval(waitForFullLobby);
+    //     message.channel.send(
+    //       "Game not started, need 5 people to start the game.\n Type !start to open a new Lobby"
+    //     );
+    //   }
+    // }, 20000);
   }
 });
 
-client.on("messageReactionAdd", (messageReaction, user) => {
-  if (messageReaction.emoji.name == "👏" && user != "987373655715639316") {
-    game.participants.push(user);
+client.on('interactionCreate', interaction => {
+  console.log('INTERACTION', interaction)
+})
+
+client.on("messageReactionAdd", (reaction, userId) => {
+  const { emoji, message } = reaction
+
+  if (emoji.name != "👏" || userId === 'botID') return
+
+  let currentGameUsers = gameUsers[message.id]
+
+  if (!currentGameUsers) {
+    gameUsers[message.id] = [userId]
+  } else {
+    currentGameUsers.push(userId)
+    gameUsers[message.id] = currentGameUsers
+  }
+
+  console.log(`Game ${message.id} users: ${gameUsers[message.id]}`)
+
+  if (gameUsers[message.id].length === TEAM_SIZE) {
+    message.channel.sendTyping();
+    const playerRoles = assignRoles(gameUsers[message.id]);
+    sendRoles(message, playerRoles);
+
+    // Create channel here
+
+    message.channel.send(
+      `Lobby Closed! Game number ${message.id} started successfully!\n A new game channel (id) has been created with all the participants`
+    );
+  } else {
+    // Log that room not full
   }
 });
 
@@ -149,38 +185,48 @@ const collectVotes = () => {
 };
 
 //assign roles to each participant
-const assignRoles = () => {
+const assignRoles = (players) => {
+  let participantRoles = {
+    mafia: "",
+    doctor: "",
+    detective: "",
+    civilians: [],
+  }
+
   const mafia =
-    game.participants[Math.floor(Math.random() * game.participants.length)];
-  game.participantRoles.mafia = mafia;
-  game.participants = game.participants.filter((player) => player != mafia);
+    players[Math.floor(Math.random() * players.length)];
+  participantRoles.mafia = mafia;
+  players = players.filter((player) => player != mafia);
   const doctor =
-    game.participants[Math.floor(Math.random() * game.participants.length)];
-  game.participantRoles.doctor = doctor;
-  game.participants = game.participants.filter((player) => player != doctor);
+    players[Math.floor(Math.random() * players.length)];
+  participantRoles.doctor = doctor;
+  players = players.filter((player) => player != doctor);
   const detective =
-    game.participants[Math.floor(Math.random() * game.participants.length)];
-  game.participantRoles.detective = detective;
-  game.participants = game.participants.filter((player) => player != detective);
+    players[Math.floor(Math.random() * players.length)];
+  participantRoles.detective = detective;
+  players = players.filter((player) => player != detective);
   const civilian =
-    game.participants[Math.floor(Math.random() * game.participants.length)];
-  game.participantRoles.civilians.push(civilian);
-  game.participants = game.participants.filter((player) => player != civilian);
-  game.participantRoles.civilians.push(game.participants[0]);
+    players[Math.floor(Math.random() * players.length)];
+  participantRoles.civilians.push(civilian);
+  players = players.filter((player) => player != civilian);
+  participantRoles.civilians.push(players[0]);
+
+  return participantRoles
 };
 
-const sendRoles = (message) => {
+const sendRoles = (message, roles) => {
   setTimeout(() => {
     // game.participants.forEach((participant) => {
     //   participant.DMChannel.delete().then(console.log).catch(console.error);
     // });
     message.channel.sendTyping();
-    game.participantRoles.mafia.send("You are mafia! 👺");
-    game.participantRoles.civilians.forEach((civilian) => {
+    roles.mafia.send("You are mafia! 👺");
+    roles.civilians.forEach((civilian) => {
       civilian.send("You are civilian 👤");
     });
-    game.participantRoles.doctor.send("You are doctor 👨🏼‍⚕️");
-    game.participantRoles.detective.send("You are detective 🕵🏼");
+    // & checks if promise isn't undefined
+    roles.doctor.send("You are doctor 👨🏼‍⚕️");
+    roles.detective.send("You are detective 🕵🏼");
     message.channel.send("New room created, go to your room!");
     createNewChannel(message);
   }, 2000);
