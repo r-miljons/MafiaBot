@@ -29,8 +29,8 @@ game.participantRoles = {
     civilian: ""
 }
 game.roomID="";
-botID = '987427488009433108' // Zane Bot
-// botID= '987373655715639316' //Mafia Bot
+// botID = '987427488009433108' // Zane Bot
+botID= '987373655715639316' //Mafia Bot
 
 client.on("messageCreate", (message) => {
     /* ----------------------------- start the game ----------------------------- */
