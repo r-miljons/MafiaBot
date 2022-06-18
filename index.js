@@ -33,9 +33,14 @@ game.participantRoles = {
   mafia: "",
   doctor: "",
   detective: "",
-  civilians: [],
+  civilian: "",
 };
-game.roomID = "";
+game.topNominations = []; //3 persons that are nominated for reveal
+game.roomID = ""; //game room
+// nominations
+game.nominationActive = false;
+let nominations = {};
+
 // botID = '987427488009433108' // Zane Bot
 botID = "987373655715639316"; //Mafia Bot
 
@@ -85,6 +90,58 @@ client.on("messageReactionAdd", (messageReaction, user) => {
     game.participants.push(user);
   }
 });
+
+/* -------------------------------------------------------------------------- */
+/*                                 nominations                                */
+/* -------------------------------------------------------------------------- */
+
+// activate nominations and set timer for it.
+// at the end of voting collect the votes
+const activateNominations = (message) => {
+  // clear nomination list
+  game.topNominations = [];
+  nominations = {};
+  // open voting
+  message.channel.sendTyping();
+  message.channel.send("Voting has started. You have 30 seconds to vote!");
+  message.channel.send("Vote -> !n @mention");
+  game.nominationActive = true;
+  // create timeout to stop voting
+  setTimeout(() => {
+    if (game.nominationActive) {
+      game.nominationActive = false;
+      message.channel.send("Votes recived. Stop Voting now.");
+      collectVotes();
+    }
+  }, 20000);
+};
+
+// register vote with nomination
+const countVote = (message) => {
+  if (!message.mentions.users) return;
+  nominations[message.author.id] = message.mentions.users.first().id;
+};
+// filter out three top nominations
+const collectVotes = () => {
+  const nominated = Object.values(nominations);
+  const topFilter = {};
+  nominated.forEach((player) => {
+    if (player in topFilter) {
+      topFilter[player] += 1;
+    } else {
+      topFilter[player] = 1;
+    }
+  });
+  // votes counted, select top 3
+  const playerArray = Object.entries(topFilter);
+  playerArray.sort(([key, value1], [key2, value2]) => value2 - value1);
+  playerArray.forEach((player, index) => {
+    if (index >= 3) return;
+    game.topNominations.push(player[0]);
+  });
+  console.log("Top Three Selected: ", game.topNominations);
+  /* ------------- top three selected, create final woting message ------------ */
+};
 
 //assign roles to each participant
 const assignRoles = () => {
