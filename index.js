@@ -33,7 +33,7 @@ game.participantRoles = {
   mafia: "",
   doctor: "",
   detective: "",
-  civilian: "",
+  civilians: [],
 };
 game.topNominations = []; //3 persons that are nominated for reveal
 game.roomID = ""; //game room
