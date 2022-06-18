@@ -14,4 +14,10 @@ A CodeX Hackathon project!
 
 `node index.js`
 
-### 
+### Playing the game
+
+* First a game lobby must be created in the text channel by typing:
+
+`!start`
+
+* When 5 people have joined the lobby, a new channel is created with all the participants
