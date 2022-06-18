@@ -26,7 +26,7 @@ game.participantRoles = {
     mafia: "",
     doctor: "",
     detective: "",
-    civilian: ""
+    civilians: []
 }
 
 
@@ -40,14 +40,21 @@ client.on("messageCreate", (message) => {
 
     if (message.author.id === '987373655715639316' && message.content == "Game Lobby open, react to this message to participate!") {
         message.react('👏');
+        const waitForFullLobby = setInterval(() => {
+            if (game.participants.length === 5) {
+                message.channel.sendTyping();
+                clearInterval(waitForFullLobby);
+                lobbyOpen = false;
+                assignRoles();
+                message.channel.send("Lobby Closed! Game number (id) started successfully!\n A new game channel (id) has been created with all the participants");
+            }
+        }, 1);
         setTimeout(() => {
-            if(game.lobbyOpen === true) {
+            if(game.lobbyOpen === true && game.participants.length < 5) {
             message.channel.sendTyping();
             game.lobbyOpen = false;
-            message.channel.send('Lobby closed, type !start to open a new Lobby');
-            let mafia = game.participants[Math.floor(Math.random() * game.participants.length)];
-            game.participantRoles.mafia = mafia;
-            message.channel.send("The mafia is: " + mafia);
+            clearInterval(waitForFullLobby);
+            message.channel.send('Game not started, need 5 people to start the game.\n Type !start to open a new Lobby');
             }
         }, 10000);
     }
@@ -64,7 +71,23 @@ client.on("messageReactionAdd", (messageReaction, user ) => {
 
 })
 
-    
+//assign roles to each participant
+const assignRoles = () => {
+    const randomPlayer = game.participants[Math.floor(Math.random() * game.participants.length)];
+    const mafia = randomPlayer;
+    game.participantRoles.mafia = mafia;
+    game.participants = game.participants.filter(player => player != mafia);
+    const doctor = randomPlayer
+    game.participantRoles.doctor = doctor;
+    game.participants = game.participants.filter(player => player != doctor);
+    const detective = randomPlayer;
+    game.participantRoles.detective = detective;
+    game.participants = game.participants.filter(player => player != detective);
+    const civilian = randomPlayer;
+    game.participantRoles.civilians.push(civilian);
+    game.participants = game.participants.filter(player => player != civilian);
+    game.participantRoles.civilians.push(game.participants[0]);
+} 
 
 // create new channel and return its id
 const createNewChannel = async (message)=>{
@@ -84,6 +107,8 @@ const deleteChannel =  (id)=>{
       }).first()
       channel.delete()
 }
+
+
 
 
 
