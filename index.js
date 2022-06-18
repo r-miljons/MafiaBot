@@ -4,13 +4,12 @@ const { token } = require('./config.json');
 // Create a new client instance
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "GUILD_MESSAGE_REACTIONS"] });
 
-const mafiaImg = 'https://media.istockphoto.com/photos/noir-movie-character-picture-id837345268?k=20&m=837345268&s=612x612&w=0&h=1tahuBSTIUCUbVcZhaxHMV5iLm-W1c_UBlz7VBAcNrc=';
+
 const exampleEmbed = new MessageEmbed()
 	.setColor('#FFFF00')
 	.setTitle('Mafia')
 	.setDescription('Join the mafia game or something')
-	.setThumbnail(mafiaImg)
-	
+	.setThumbnail('https://media.istockphoto.com/photos/noir-movie-character-picture-id837345268?k=20&m=837345268&s=612x612&w=0&h=1tahuBSTIUCUbVcZhaxHMV5iLm-W1c_UBlz7VBAcNrc=') 
 	.setTimestamp();
 
 
@@ -23,27 +22,31 @@ const game = {};
 
 game.lobbyOpen = false;
 game.participants = [];
+game.participantRoles = {
+    mafia: "",
+    doctor: "",
+    detective: "",
+    civilian: ""
+}
 
 
 client.on("messageCreate", (message) => {
-    if(message.content.startsWith("!start") && game.lobbyOpen === false) {
 
+    if(message.content.startsWith("!start") && game.lobbyOpen === false) {
         game.lobbyOpen = true;
-        message.channel.send({ embeds: [exampleEmbed]});  
-       
+        message.channel.send(/*{ embeds: [exampleEmbed]}*/"Game Lobby open, react to this message to participate!");
+        
     }
-    if (message.author.id === '987373655715639316' && message.content === { embeds: [exampleEmbed]} ) {
+
+    if (message.author.id === '987373655715639316' && message.content == "Game Lobby open, react to this message to participate!") {
         message.react('👏');
         setTimeout(() => {
             if(game.lobbyOpen === true) {
             message.channel.sendTyping();
             game.lobbyOpen = false;
             message.channel.send('Lobby closed, type !start to open a new Lobby');
-            let mafia;
-            function getMafia() {
-                let mafiaID = Math.floor(Math.random() * game.participants.length);
-                mafia = game.participants[mafiaID].id;
-            }
+            let mafia = game.participants[Math.floor(Math.random() * game.participants.length)];
+            game.participantRoles.mafia = mafia;
             message.channel.send("The mafia is: " + mafia);
             }
         }, 10000);
