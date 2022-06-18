@@ -78,17 +78,16 @@ client.on("messageReactionAdd", (messageReaction, user ) => {
 
 //assign roles to each participant
 const assignRoles = () => {
-    const randomPlayer = game.participants[Math.floor(Math.random() * game.participants.length)];
-    const mafia = randomPlayer;
+    const mafia = game.participants[Math.floor(Math.random() * game.participants.length)];
     game.participantRoles.mafia = mafia;
     game.participants = game.participants.filter(player => player != mafia);
-    const doctor = randomPlayer
+    const doctor = game.participants[Math.floor(Math.random() * game.participants.length)];
     game.participantRoles.doctor = doctor;
     game.participants = game.participants.filter(player => player != doctor);
-    const detective = randomPlayer;
+    const detective = game.participants[Math.floor(Math.random() * game.participants.length)];
     game.participantRoles.detective = detective;
     game.participants = game.participants.filter(player => player != detective);
-    const civilian = randomPlayer;
+    const civilian = game.participants[Math.floor(Math.random() * game.participants.length)];
     game.participantRoles.civilians.push(civilian);
     game.participants = game.participants.filter(player => player != civilian);
     game.participantRoles.civilians.push(game.participants[0]);
