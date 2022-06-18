@@ -1,6 +1,7 @@
 # MafiaBot
 
 A CodeX Hackathon project!
+
 Bored on your server? Take a break to play one of the most famous games right on Discord!
 
 ### Setup
