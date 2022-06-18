@@ -91,6 +91,65 @@ client.on("messageReactionAdd", (messageReaction, user) => {
   }
 });
 
+// When night starts
+
+const startNight = (message) => {
+  let mafiaVoted = false;
+  let doctorVoted = false;
+  let detectiveVoted = false;
+
+ // ids of players who got chosen
+  let mafiaKilled;
+  let doctorSaved;
+  let detectiveRevealed;
+
+  // each player gets sent a list of people to kill/save/reveal
+  let mafiaList = game.participants.filter(player => player != game.participantRoles.mafia);
+  let doctorList = game.participants.filter(player => player != game.participantRoles.doctor);
+  let detectiveList = game.participants.filter(player => player != game.participantRoles.detective);
+  game.participantRoles.mafia.send(`Who do you want to kill? 🔪 \n 1. ${mafiaList[0]} \n 2. ${mafiaList[1]} \n 3. ${mafiaList[2]} \n 4. ${mafiaList[3]} \n Reply with a number (1-4):`);
+  game.participantRoles.doctor.send(`Who do you want to save? ❤️ \n 1. ${doctorList[0]} \n 2. ${doctorList[1]} \n 3. ${doctorList[2]} \n 4. ${doctorList[3]} \n Reply with a number (1-4):`);
+  game.participantRoles.detective.send(`Who do you want to reveal? 👁️ \n 1. ${detectiveList[0]} \n 2. ${detectiveList[1]} \n 3. ${detectiveList[2]} \n 4. ${detectiveList[3]} \n Reply with a number (1-4):`);
+  
+
+  //this interval checks who voted for whom
+  const listenForAllVotes = setInterval(()=>{
+    if(message.content == "1" || message.content == "2" || message.content == "3" || message.content == "4") {
+      if(message.author == game.participantRoles.mafia) {
+        mafiaKilled = mafiaList[Number(message.content)];
+        mafiaVoted = true;
+      }
+      if(message.author == game.participantRoles.doctor) {
+        doctorSaved = doctorList[Number(message.content)];
+        doctorVoted = true;
+      }
+      if(message.author == game.participantRoles.detective) {
+        detectiveRevealed = detectiveList[Number(message.content)];
+        detectiveVoted = true;
+      }
+    }
+    if(mafiaVoted && doctorVoted && detectiveVoted) {
+      clearInterval(listenForAllVotes);
+
+      //send the detective role of the revealed player
+      for (const [key, value] of Object.entries(game.participantRoles)) {
+        if (value == detectiveRevealed) {
+          game.participantRoles.detective.send(`${detectiveRevealed} is: ${key}`);
+        }
+      }
+      
+      // calculate who is killed
+      if (mafiaKilled == doctorSaved) {
+        // bot says everyone survived!
+      } else {
+        // player that is eliminated: mafiaKilled;
+      }
+      // start the day
+    }
+  },1);
+}
+
+
 /* -------------------------------------------------------------------------- */
 /*                                 nominations                                */
 /* -------------------------------------------------------------------------- */
@@ -173,7 +232,6 @@ const sendRoles = (message) => {
     });
     game.participantRoles.doctor.send("You are doctor 👨🏼‍⚕️");
     game.participantRoles.detective.send("You are detective 🕵🏼");
-    message.channel.send("New room created, go to your room!");
     createNewChannel(message);
   }, 1000);
 };
