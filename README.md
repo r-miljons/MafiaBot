@@ -20,4 +20,7 @@ A CodeX Hackathon project!
 
 `!start`
 
-* When 5 people have joined the lobby, a new channel is created with all the participants
+* When 5 people have joined the lobby, a new channel is created with all the participants.
+* Bot DMs each player their role (Mafia, Doctor, Detective or civilian).
+* Participants talk to each other with the goal of finding out who is the mafia
+* 
