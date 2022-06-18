@@ -51,6 +51,9 @@ client.on("messageCreate", (message) => {
                 assignRoles();
                 activateLobby(message);
                 message.channel.send("Lobby Closed! Game number (id) started successfully!\n A new game channel (id) has been created with all the participants");
+                setTimeout(() => {
+                    game.participants = [];
+                }, 1000);
             }
         }, 1);
         setTimeout(() => {
