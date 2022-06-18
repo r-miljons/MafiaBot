@@ -30,12 +30,18 @@ const game = {};
 game.lobbyOpen = false;
 game.participants = [];
 game.participantRoles = {
-  mafia: "",
-  doctor: "",
-  detective: "",
-  civilians: [],
-};
-game.roomID = "";
+    mafia: "",
+    doctor: "",
+    detective: "",
+    civilian: ""
+}
+game.topNominations=[] //3 persons that are nominated for reveal
+game.roomID=""; //game room
+// nominations
+game.nominationActive = false;
+let nominations = {}
+
+
 // botID = '987427488009433108' // Zane Bot
 botID = "987373655715639316"; //Mafia Bot
 
@@ -61,6 +67,29 @@ client.on("messageCreate", (message) => {
         lobbyOpen = false;
         assignRoles();
         activateLobby(message);
+    }
+    /* ---------------------------- start nominations --------------------------- */
+     if (message.content.startsWith("!nominate")){
+        activateNominations(message)
+     }
+    //  vote for person ->  !n @name
+     if (message.content.startsWith("!n ") && game.nominationActive){
+        countVote(message)
+     }
+});
+ 
+
+client.on("messageReactionAdd", (messageReaction, user ) => {
+    if (messageReaction.emoji.name == '👏'&& user != '987373655715639316') {
+        game.participants.push(user);
+        console.log(game.participants[0].id);
+    }
+
+})
+
+
+
+const activateLobby= (message)=>{
         message.channel.send(
           "Lobby Closed! Game number (id) started successfully!\n A new game channel (id) has been created with all the participants"
         );
@@ -76,6 +105,7 @@ client.on("messageCreate", (message) => {
         );
       }
     }, 10000);
+}
   }
 });
 
@@ -84,6 +114,59 @@ client.on("messageReactionAdd", (messageReaction, user) => {
     game.participants.push(user);
   }
 });
+
+
+/* -------------------------------------------------------------------------- */
+/*                                 nominations                                */
+/* -------------------------------------------------------------------------- */
+
+// activate nominations and set timer for it.
+// at the end of voting collect the votes
+const activateNominations =(message)=>{
+    // clear nomination list
+    game.topNominations = [];
+    nominations = {}
+    // open voting
+    message.channel.sendTyping();
+    message.channel.send("Voting has started. You have 30 seconds to vote!")
+    message.channel.send("Vote -> !n @mention")
+    game.nominationActive = true;
+    // create timeout to stop voting
+    setTimeout(()=>{
+        if(game.nominationActive){
+            game.nominationActive = false;
+            message.channel.send("Votes recived. Stop Voting now.");
+            collectVotes()
+        }
+    }, 20000)
+}
+
+// register vote with nomination
+const countVote =(message)=>{
+    if (!message.mentions.users) return
+    nominations[message.author.id] = message.mentions.users.first().id
+}
+// filter out three top nominations
+const collectVotes = ()=>{
+    const nominated = Object.values(nominations)
+    const topFilter = {}
+    nominated.forEach(player => {
+        if (player in topFilter){
+            topFilter[player]  += 1
+        }else{
+            topFilter[player] =1
+        }
+    });
+    // votes counted, select top 3
+    const playerArray = Object.entries(topFilter)
+    playerArray.sort(([key,value1],[key2,value2])=> value2-value1)
+    playerArray.forEach((player, index) => {
+        if (index >= 3 )return
+        game.topNominations.push(player[0])
+    });
+    console.log("Top Three Selected: ",game.topNominations)
+    /* ------------- top three selected, create final woting message ------------ */
+}
 
 //assign roles to each participant
 const assignRoles = () => {
