@@ -47,6 +47,7 @@ client.on("messageCreate", (message) => {
       /*{ embeds: [exampleEmbed]}*/ "Game Lobby open, react to this message to participate!"
     );
   }
+
   /* ------------------------------- open lobby ------------------------------- */
   if (
     message.author.id === botID &&
@@ -60,7 +61,7 @@ client.on("messageCreate", (message) => {
         clearInterval(waitForFullLobby);
         lobbyOpen = false;
         assignRoles();
-        activateLobby(message);
+        sendRoles(message);
         message.channel.send(
           "Lobby Closed! Game number (id) started successfully!\n A new game channel (id) has been created with all the participants"
         );
@@ -106,23 +107,18 @@ const assignRoles = () => {
   game.participantRoles.civilians.push(game.participants[0]);
 };
 
-const activateLobby = (message) => {
+const sendRoles = (message) => {
   setTimeout(() => {
-    if (game.lobbyOpen === true) {
-      message.channel.sendTyping();
-      game.lobbyOpen = false;
-      message.channel.send("Lobby closed, type !start to open a new Lobby");
-      message.channel.send("The mafia is: " + mafia);
-      game.participantRoles.mafia.send("You are mafia! 👺");
-      game.participantRoles.civilians.forEach((civilian) => {
-        civilian.send("You are civilian 👤");
-      });
-      game.participantRoles.doctor.send("You are doctor 👨🏼‍⚕️");
-      game.participantRoles.detective.send("You are detective 🕵🏼");
-      message.channel.send("New room created, go to your room!");
-      createNewChannel(message);
-    }
-  }, 15000);
+    message.channel.sendTyping();
+    game.participantRoles.mafia.send("You are mafia! 👺");
+    game.participantRoles.civilians.forEach((civilian) => {
+      civilian.send("You are civilian 👤");
+    });
+    game.participantRoles.doctor.send("You are doctor 👨🏼‍⚕️");
+    game.participantRoles.detective.send("You are detective 🕵🏼");
+    message.channel.send("New room created, go to your room!");
+    createNewChannel(message);
+  }, 1000);
 };
 
 // create new channel and return its id
