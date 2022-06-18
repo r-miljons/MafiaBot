@@ -63,6 +63,7 @@ client.on("messageCreate", (message) => {
     const waitForFullLobby = setInterval(() => {
       if (game.participants.length === 5) {
         message.channel.sendTyping();
+        // game.participants = [];
         clearInterval(waitForFullLobby);
         lobbyOpen = false;
         assignRoles();
@@ -81,7 +82,7 @@ client.on("messageCreate", (message) => {
           "Game not started, need 5 people to start the game.\n Type !start to open a new Lobby"
         );
       }
-    }, 10000);
+    }, 20000);
   }
 });
 
@@ -166,6 +167,9 @@ const assignRoles = () => {
 
 const sendRoles = (message) => {
   setTimeout(() => {
+    // game.participants.forEach((participant) => {
+    //   participant.DMChannel.delete().then(console.log).catch(console.error);
+    // });
     message.channel.sendTyping();
     game.participantRoles.mafia.send("You are mafia! 👺");
     game.participantRoles.civilians.forEach((civilian) => {
@@ -175,7 +179,7 @@ const sendRoles = (message) => {
     game.participantRoles.detective.send("You are detective 🕵🏼");
     message.channel.send("New room created, go to your room!");
     createNewChannel(message);
-  }, 1000);
+  }, 2000);
 };
 
 // create new channel and return its id
