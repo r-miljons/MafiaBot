@@ -33,7 +33,7 @@ game.participantRoles = {
   mafia: "",
   doctor: "",
   detective: "",
-  civilian: "",
+  civilians: [],
 };
 game.roomID = "";
 // botID = '987427488009433108' // Zane Bot
@@ -75,6 +75,9 @@ const activateLobby = (message) => {
       game.participantRoles.mafia = mafia;
       message.channel.send("The mafia is: " + mafia);
       mafia.send("You are mafia!");
+      civilians.forEach((civilian) => {
+        civilian.send("You are civilian");
+      });
       message.channel.send("New room created, go to your room!");
       createNewChannel(message);
     }
