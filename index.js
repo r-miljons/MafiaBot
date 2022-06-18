@@ -1,4 +1,4 @@
-const { Client, Intents, MessageEmbed } = require("discord.js");
+const { Client, Intents, MessageEmbed , MessageActionRow, MessageSelectMenu} = require("discord.js");
 const { token } = require("./config.json");
 
 // Create a new client instance
@@ -40,7 +40,11 @@ game.roomID = ""; //game room
 // nominations
 game.nominationActive = false;
 let nominations = {};
+game.votingActive = false;
+game.revealedPlayer = ""; 
+let reveledList = [];
 
+game.playerStatus= {}; // holds true if player in the game
 // botID = '987427488009433108' // Zane Bot
 botID = "987373655715639316"; //Mafia Bot
 
@@ -51,6 +55,14 @@ client.on("messageCreate", (message) => {
     message.channel.send(
       /*{ embeds: [exampleEmbed]}*/ "Game Lobby open, react to this message to participate!"
     );
+  }
+
+  if(message.content.startsWith("!drop")){
+    registerPlayers();
+    createDropdown(message)
+  }
+  if(message.content.startsWith("!id")){
+    console.log(message.author.id)
   }
 
   /* ------------------------------- open lobby ------------------------------- */
@@ -68,6 +80,7 @@ client.on("messageCreate", (message) => {
         lobbyOpen = false;
         assignRoles();
         sendRoles(message);
+        registerPlayers();
         message.channel.send(
           "Lobby Closed! Game number (id) started successfully!\n A new game channel (id) has been created with all the participants"
         );
@@ -84,6 +97,18 @@ client.on("messageCreate", (message) => {
       }
     }, 20000);
   }
+});
+
+/* -------------------- catch interections from dropdown -------------------- */
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isSelectMenu()) return;
+    if (!game.votingActive) return;
+    reveledList.push(interaction.values[0])
+    // console.log("Selected:", interaction.values)
+    if (interaction.customId === 'killer-choosen'){
+        await interaction.deferUpdate();
+		await interaction.editReply({ content: 'You have made your choice', components: [] });
+    }
 });
 
 client.on("messageReactionAdd", (messageReaction, user) => {
@@ -143,7 +168,14 @@ const collectVotes = () => {
   console.log("Top Three Selected: ", game.topNominations);
   /* ------------- top three selected, create final woting message ------------ */
 };
-
+// when game starts register all users in list with vaiule 'true' as active
+const registerPlayers=()=>{
+    game.participants.forEach((participant) => {
+      game.playerStatus[participant]= true
+    });
+    // temp
+    game.playerStatus['864911396302749716'] = true;
+}
 //assign roles to each participant
 const assignRoles = () => {
   const mafia =
@@ -182,6 +214,47 @@ const sendRoles = (message) => {
   }, 2000);
 };
 
+const createDropdown = async (message) =>{
+    game.votingActive = true
+    setTimeout(() => {
+        game.votingActive = false
+        message.channel.send("Voting ended")
+        // reveal selected user
+    }, 20000)
+    
+    let playerList = Object.entries(game.playerStatus)
+    // for ech active user send dropdown with choices
+    for (let i=0; i<playerList.length; i++){
+        console.log("Test:  ",playerList[i])
+        // let user = client.users.cache.find(user => user.id === '864911396302749716')
+       console.log(playerList[i][0])
+
+         const user = client.guilds.me
+        .filter((channel) => {
+          return channel.id === id;
+        })
+        .first();
+        const row = new MessageActionRow()
+        .addComponents(
+            new MessageSelectMenu()
+                .setCustomId('killer-choosen')
+                .setPlaceholder('Nothing selected')
+                .addOptions([
+                    {
+                        label: user.username,
+                        value: user.id,
+                    },
+                    {
+                        label: 'You can select me too',
+                        value: 'second_option',
+                    },
+                ]),
+        );
+        await game.playerStatus[i].reply({ content: 'Select the killer!', components: [row] });
+    }
+}
+
+
 // create new channel and return its id
 const createNewChannel = async (message) => {
   let result = await message.guild.channels.create("Dark Corner", {
@@ -197,11 +270,13 @@ const createNewChannel = async (message) => {
 };
 //  delete channel by id
 const deleteChannel = (id) => {
+
   const channel = client.channels.cache
     .filter((channel) => {
       return channel.id === id;
     })
     .first();
+
   channel.delete();
 };
 
