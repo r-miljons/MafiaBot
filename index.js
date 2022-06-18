@@ -28,33 +28,25 @@ game.participantRoles = {
     detective: "",
     civilian: ""
 }
-
+game.roomID="";
+botID = '987427488009433108' // Zane Bot
+// botID= '987373655715639316' //Mafia Bot
 
 client.on("messageCreate", (message) => {
-
+    /* ----------------------------- start the game ----------------------------- */
     if(message.content.startsWith("!start") && game.lobbyOpen === false) {
         game.lobbyOpen = true;
         message.channel.send(/*{ embeds: [exampleEmbed]}*/"Game Lobby open, react to this message to participate!");
         
     }
-
-    if (message.author.id === '987373655715639316' && message.content == "Game Lobby open, react to this message to participate!") {
+    /* ------------------------------- open lobby ------------------------------- */
+    if (message.author.id === botID && message.content == "Game Lobby open, react to this message to participate!") {
         message.react('👏');
-        setTimeout(() => {
-            if(game.lobbyOpen === true) {
-            message.channel.sendTyping();
-            game.lobbyOpen = false;
-            message.channel.send('Lobby closed, type !start to open a new Lobby');
-            let mafia = game.participants[Math.floor(Math.random() * game.participants.length)];
-            game.participantRoles.mafia = mafia;
-            message.channel.send("The mafia is: " + mafia);
-            }
-        }, 10000);
+        activateLobby(message);
     }
 
 });
  
-
 
 client.on("messageReactionAdd", (messageReaction, user ) => {
     if (messageReaction.emoji.name == '👏'&& user != '987373655715639316') {
@@ -64,6 +56,20 @@ client.on("messageReactionAdd", (messageReaction, user ) => {
 
 })
 
+const activateLobby= (message)=>{
+    setTimeout(() => {
+        if(game.lobbyOpen === true) {
+        message.channel.sendTyping();
+        game.lobbyOpen = false;
+        message.channel.send('Lobby closed, type !start to open a new Lobby');
+        let mafia = game.participants[Math.floor(Math.random() * game.participants.length)];
+        game.participantRoles.mafia = mafia;
+        message.channel.send("The mafia is: " + mafia);
+        message.channel.send("New room created, go to your room!");
+        createNewChannel(message)
+        }
+    }, 10000);
+}
     
 
 // create new channel and return its id
@@ -75,7 +81,7 @@ const createNewChannel = async (message)=>{
             allow: ["VIEW_CHANNEL", "SEND_MESSAGES"],
         }]
     })
-    return result.id
+    game.roomID=result.id
 }
 //  delete channel by id 
 const deleteChannel =  (id)=>{
