@@ -6,6 +6,10 @@ Bored on your server? Take a break to play one of the most famous party game rig
 
 ### Setup
 
+- Add the bot to your server using this link: https://discord.com/api/oauth2/authorize?client_id=987373655715639316&permissions=8&scope=bot
+
+#### Or...
+
 - Clone the repo, install all packages:
 
 `npm install`
