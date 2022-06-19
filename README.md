@@ -2,7 +2,7 @@
 
 A CodeX Hackathon project!
 
-Bored on your server? Take a break to play one of the most famous party game right on Discord!
+Bored on your server? Take a break to play one of the most famous party games!
 
 ### Setup
 
