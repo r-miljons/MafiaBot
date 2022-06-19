@@ -38,5 +38,5 @@ Bored on your server? Take a break to play one of the most famous party game rig
 `!nominate @player_name`.
 
 - Player with the most nominations gets eliminated and the night begins.
-- Games ends when a mafia is killed or everyone is killed by the mafia.
+- Game ends when a mafia is killed or everyone is killed by the mafia.
 
