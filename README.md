@@ -2,7 +2,7 @@
 
 A CodeX Hackathon project!
 
-Bored on your server? Take a break to play one of the most famous games right on Discord!
+Bored on your server? Take a break to play one of the most famous party game right on Discord!
 
 ### Setup
 
@@ -26,11 +26,13 @@ Bored on your server? Take a break to play one of the most famous games right on
 
 - When 5 people have joined the lobby, a new channel is created with all the participants.
 - Bot DMs each player their role (Mafia, Doctor, Detective or civilian).
-- When night begins Mafia decides who to kill, and users get notification who was killed.
-- Doctor can choose one player to be saved during the night, and detective can reveal a role of a choosen player.
-- Players get to vote for who, in their opinion, could be mafia by typing `!nominate @player_name`.
-- Player with the most votes gets eliminated.
-- Participants talk to each other with the goal of finding out who is the mafia.
-- Game goes on untill mafia is eliminated or untill mafia manages to kill all the civilians.
+- When the Night begins Players get asked who do they want to: Mafia - kill, Doctor - save, Detective - reveal.
+- Night ends and the bot annouces if someone got killed tonight.
+- During the day Players talk to each other with the goal of finding out who is the mafia.
+- Players get to vote for who they think could be the mafia by typing:
 
-Have fun and good luck!
+`!nominate @player_name`.
+
+- Player with the most nominations gets eliminated and the night begins.
+- Games ends when a mafia is killed or everyone is killed by the mafia.
+
